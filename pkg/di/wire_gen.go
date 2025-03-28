@@ -9,18 +9,22 @@ package di
 import (
 	"github.com/joejosephvarghese/message/server/pkg"
 	"github.com/joejosephvarghese/message/server/pkg/api"
+	"github.com/joejosephvarghese/message/server/pkg/api/handler"
 	"github.com/joejosephvarghese/message/server/pkg/api/middleware"
 	"github.com/joejosephvarghese/message/server/pkg/db"
+	"github.com/joejosephvarghese/message/server/pkg/usecase"
 )
 
 // Injectors from wire.go:
 
 func InitializeAPI(cfg config.Config) (*api.Server, error) {
+	authUseCase := usecase.NewAuthUseCase()
+	authHandler := handler.NewAuthHandler(authUseCase)
 	gormDB, err := db.ConnectDatabase(cfg)
 	if err != nil {
 		return nil, err
 	}
 	middlewareMiddleware := middleware.NewMiddleware()
-	server := api.NewServerHTTP(cfg, gormDB, middlewareMiddleware)
+	server := api.NewServerHTTP(cfg, authHandler, gormDB, middlewareMiddleware)
 	return server, nil
 }
