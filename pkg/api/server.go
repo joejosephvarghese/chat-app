@@ -6,14 +6,16 @@ import (
 	"github.com/gin-gonic/gin"
 	config "github.com/joejosephvarghese/message/server/pkg"
 	"github.com/joejosephvarghese/message/server/pkg/api/middleware"
+	"gorm.io/gorm"
 )
 
 type Server struct {
 	engine *gin.Engine
 	port   string
+	db     *gorm.DB // ✅ Add Database field
 }
 
-func NewServerHTTP(cfg config.Config, middleware middleware.Middleware) *Server {
+func NewServerHTTP(cfg config.Config, db *gorm.DB, middleware middleware.Middleware) *Server {
 	engine := gin.New()
 
 	engine.Use(middleware.Cors()) // Now, mw.Cors() works correctly

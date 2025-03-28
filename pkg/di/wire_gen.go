@@ -10,12 +10,17 @@ import (
 	"github.com/joejosephvarghese/message/server/pkg"
 	"github.com/joejosephvarghese/message/server/pkg/api"
 	"github.com/joejosephvarghese/message/server/pkg/api/middleware"
+	"github.com/joejosephvarghese/message/server/pkg/db"
 )
 
 // Injectors from wire.go:
 
 func InitializeAPI(cfg config.Config) (*api.Server, error) {
+	gormDB, err := db.ConnectDatabase(cfg)
+	if err != nil {
+		return nil, err
+	}
 	middlewareMiddleware := middleware.NewMiddleware()
-	server := api.NewServerHTTP(cfg, middlewareMiddleware)
+	server := api.NewServerHTTP(cfg, gormDB, middlewareMiddleware)
 	return server, nil
 }
