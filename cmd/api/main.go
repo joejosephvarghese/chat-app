@@ -1,17 +1,26 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	config "github.com/joejosephvarghese/message/server/pkg"
+	"github.com/joejosephvarghese/message/server/pkg/di"
 )
 
 func main() {
-	// Load configuration
-	cfg, err := config.LoadConfig()
+
+	config, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+		log.Fatal("failed to load config: ", err)
 	}
-	fmt.Printf("Loaded Config: %+v\n", cfg)
+
+	server, err := di.InitializeAPI(config)
+	if err != nil {
+		log.Fatal("failed to initialize server: ", err)
+	}
+
+	if err := server.Start(); err != nil {
+		log.Fatal("failed to start server: ", err)
+	}
+
 }
